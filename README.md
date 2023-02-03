@@ -69,5 +69,16 @@ In a .NET MAUI app, you write code that primarily interacts with the .NET MAUI A
 
 ![image](https://user-images.githubusercontent.com/34960418/216617103-d803735d-6ec1-4481-bd62-6a64de1dcdee.png)
 
-- **Platforms (folder)** - platform-native initialization code calls `CreateMauiApp` in `MauiProgram.cs`.
+- **Platforms** - platform-native initialization code calls `CreateMauiApp()` in `MauiProgram.cs`.
 - **MauiProgram.cs** - application entry point, called by the platform's native code, register services in the DI container.
+- **Resources** - contains fonts, images and assets used by all platforms.
+- **App.xaml** - defines the resources that the app is going to use.
+- **App.xaml.cs** - code behind `App.xaml`, defines the App class representing the app at runtime, creates an initial window and assigns it to the MainPage property.
+- **AppShell.xaml** - Defines the main structure of the app. The MAUI Shell provides features like: app styling, url navigation and layout options. 
+- **AppShell.xaml.cs** - code behind `AppShell.xaml`, define routes.
+- **MainPage.xaml** - default main page, XAML based layout definition.
+- **MainPage.xaml.cs** - code behind `MainPage.xaml` contains UI event handlers
+
+
+
+
