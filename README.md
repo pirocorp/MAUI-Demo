@@ -80,5 +80,6 @@ In a .NET MAUI app, you write code that primarily interacts with the .NET MAUI A
 - **MainPage.xaml.cs** - code behind `MainPage.xaml` contains UI event handlers
 
 
+## App Start-up
 
-
+![image](https://user-images.githubusercontent.com/34960418/216621451-490b52f6-5a68-49d8-a32e-347536cc3830.png)
