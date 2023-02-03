@@ -65,3 +65,9 @@ In a .NET MAUI app, you write code that primarily interacts with the .NET MAUI A
 .NET MAUI single project is enabled using multi-targeting and the use of SDK-style projects. For more information about .NET MAUI single project, see .NET MAUI single project.
 
 
+## Standard MAUI Project Structure
+
+![image](https://user-images.githubusercontent.com/34960418/216617103-d803735d-6ec1-4481-bd62-6a64de1dcdee.png)
+
+- **Platforms (folder)** - platform-native initialization code calls `CreateMauiApp` in `MauiProgram.cs`.
+- **MauiProgram.cs** - application entry point, called by the platform's native code, register services in the DI container.
