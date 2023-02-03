@@ -91,9 +91,15 @@ In a .NET MAUI app, you write code that primarily interacts with the .NET MAUI A
 
 ![image](https://user-images.githubusercontent.com/34960418/216626196-90fa2094-43c0-4b6e-89f2-3979c9056d8d.png)
 
+### XAML vs C#
 
+The UI is typically defined as a combination of XAML and C#. XAML is used more for rendering visuals (XAML is markup language). C# is usually used for the **code behind**, e.g., event handling code.
 
-
+```xaml
+<Button Text="Save" Grid.Row="1" Grid.Column="0" Clicked="OnSaveButtonClicked" Margin="20,0" />
+<Button Text="Delete" Grid.Row="1" Grid.Column="1" Clicked="OnDeleteButtonClicked" />
+<Button Text="Cancel" Grid.Row="1" Grid.Column="2" Clicked="OnCancelButtonClicked" Margin="20,0" />
+```
 
 
 
