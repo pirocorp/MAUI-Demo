@@ -83,3 +83,22 @@ In a .NET MAUI app, you write code that primarily interacts with the .NET MAUI A
 ## App Start-up
 
 ![image](https://user-images.githubusercontent.com/34960418/216621451-490b52f6-5a68-49d8-a32e-347536cc3830.png)
+
+
+## UI Hierarchy
+
+![image](https://user-images.githubusercontent.com/34960418/216623036-e8cac575-24d6-41c2-ab9a-5d2ef704a33c.png)
+
+
+
+
+
+
+
+
+
+
+
+
+
+
