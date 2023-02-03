@@ -109,9 +109,9 @@ async void OnDeleteButtonClicked(object sender, EventArgs e)
 }
 ```
 
+## MAUI Application Architecture
 
-
-
+![image](https://user-images.githubusercontent.com/34960418/216632694-137d6997-1441-48b3-9b51-5996da89fe2a.png)
 
 
 
