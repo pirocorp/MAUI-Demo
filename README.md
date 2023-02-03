@@ -101,7 +101,13 @@ The UI is typically defined as a combination of XAML and C#. XAML is used more f
 <Button Text="Cancel" Grid.Row="1" Grid.Column="2" Clicked="OnCancelButtonClicked" Margin="20,0" />
 ```
 
-
+```csharp
+async void OnDeleteButtonClicked(object sender, EventArgs e)
+{
+    await _dataService.DeleteToDoAsync(ToDo.Id);
+    await Shell.Current.GoToAsync("..");
+}
+```
 
 
 
