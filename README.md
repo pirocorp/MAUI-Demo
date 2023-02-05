@@ -133,3 +133,28 @@ The child of a ContentPage is typically a layout, such as Grid or StackLayout, w
 >  **Note**
 >  
 > The value of the `Title` property will be shown on the navigation bar, when the app performs navigation using a **NavigationPage**.
+
+
+## Data bindings
+
+.NET Multi-platform App UI (.NET MAUI) data bindings allow properties of two objects to be linked so that a change in one causes a change in the other. This is a very valuable tool, and while data bindings can be defined entirely in code, XAML provides shortcuts and convenience.
+
+Data bindings connect properties of two objects, called the **source** and the **target**. In code, two steps are required:
+
+1. The `BindingContext` property of the target object must be set to the source object,
+2. The `SetBinding` method (often used in conjunction with the Binding class) must be called on the target object to bind a property of that object to a property of the source object.
+
+The target property must be a bindable property, which means that the target object must derive from BindableObject. A property of Label, such as `Text`, is associated with the bindable property `TextProperty`.
+
+```csharp
+// Set the binding context to the current UI control.
+BindingContext = this;
+```
+
+
+
+
+
+
+
+
