@@ -152,7 +152,9 @@ BindingContext = this;
 ```
 
 
+## Resources
 
+- [Connect to local web services from Android emulators and iOS simulators](https://learn.microsoft.com/en-us/dotnet/maui/data-cloud/local-web-services?wt.mc_id=lesjackson_dotnetmaui-mvp-video&view=net-maui-7.0)
 
 
 
