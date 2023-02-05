@@ -114,4 +114,22 @@ async void OnDeleteButtonClicked(object sender, EventArgs e)
 ![image](https://user-images.githubusercontent.com/34960418/216632694-137d6997-1441-48b3-9b51-5996da89fe2a.png)
 
 
+## MAUI XAML pages
 
+![image](https://user-images.githubusercontent.com/34960418/216823566-3e7be5b7-9038-4f21-8da5-12355e0e539b.png)
+
+The .NET Multi-platform App UI (.NET MAUI) **ContentPage** displays a single view, which is often a layout such as as Grid or StackLayout, and is the most common page type.
+
+ContentPage defines a `Content` property, of type View, which defines the view that represents the page's content. This property is backed by a BindableProperty object, which means that it can be the target of data bindings, and styled. In addition, ContentPage inherits `Title`, `IconImageSource`, `BackgroundImageSource`, `IsBusy`, and `Padding` bindable properties from the Page class.
+
+> **Note**
+> 
+> The `Content` property is the content property of the **ContentPage** class, and therefore does not need to be explicitly set from XAML.
+
+.NET MAUI apps typically contain multiple pages that derive from ContentPage, and navigation between these pages can be performed.
+
+The child of a ContentPage is typically a layout, such as Grid or StackLayout, with the layout typically containing multiple views. However, the child of the ContentPage can be a view that displays a collection, such as CollectionView.
+
+>  **Note**
+>  
+> The value of the `Title` property will be shown on the navigation bar, when the app performs navigation using a **NavigationPage**.
