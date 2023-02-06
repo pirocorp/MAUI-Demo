@@ -197,4 +197,61 @@ All that’s left to do, is bind this **NavigateCommand** to a Button in XAML:
 
 Tapping this button will call the `MainPageViewModel`‘s (our `BindingContext`) `NavigateToSecondPageCommand`, which will call the `NavigationService`‘s `NavigateToSecondPage` method which will perform the actual navigation by resolving an instance of type `SecondPage` and navigate to that via the `App`‘s `MainPage`’s `Navigation` property.
 
+### Navigating back with Navigation Service
+
+All we have to do, is expose a method in the `NavigationService` (and the `INavigationService` interface) which implements the thing you want to achieve. Then you can call that method from your **ViewModel**.
+
+NavigationService:
+
+```csharp
+public Task NavigateBack()
+{
+    if (Navigation.NavigationStack.Count > 1)
+    {
+        return Navigation.PopAsync();
+    }
+
+    throw new InvalidOperationException("No pages to navigate back to!");
+}
+```
+
+INavigationService:
+
+```csharp
+public interface INavigationService
+{
+    Task NavigateToSecondPage();
+    Task NavigateBack();
+}
+```
+
+SecondPageViewModel:
+
+```csharp
+public class SecondPageViewModel : ViewModelBase
+{
+    private readonly INavigationService navigationService;
+
+    public SecondPageViewModel(INavigationService navigationService)
+    {
+        this.navigationService = navigationService;
+    }
+
+    public Command GoBackCommand 
+        => new(async () => await this.navigationService.NavigateBack());
+}
+```
+
+SecondPage:
+
+```xaml
+<Button 
+    Text="Go back!"
+    FontAttributes="Bold"
+    Grid.Row="3"
+    Command="{Binding GoBackCommand}"
+    HorizontalOptions="Center" />
+```
+
+
 
