@@ -1,10 +1,14 @@
 ﻿namespace ToDo.Maui
 {
+    using ToDo.Maui.Pages;
+
     public partial class AppShell : Shell
     {
         public AppShell()
         {
-            InitializeComponent();
+            this.InitializeComponent();
+
+            Routing.RegisterRoute(nameof(ManageToDoPage), typeof(ManageToDoPage));
         }
     }
 }

@@ -1,0 +1,8 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+
+<!-- https://learn.microsoft.com/en-us/dotnet/maui/data-cloud/local-web-services?wt.mc_id=lesjackson_dotnetmaui-mvp-video&view=net-maui-7.0#android-network-security-configuration -->
+<network-security-config>
+    <domain-config cleartextTrafficPermitted="true">
+        <domain includeSubdomains="true">10.0.2.2</domain>
+    </domain-config>
+</network-security-config>

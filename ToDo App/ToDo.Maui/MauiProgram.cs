@@ -1,6 +1,8 @@
 ﻿namespace ToDo.Maui
 {
     using Microsoft.Extensions.Logging;
+    using Pages;
+    using ToDo.Maui.DataServices;
 
     public static class MauiProgram
     {
@@ -18,6 +20,11 @@
 #if DEBUG
 		builder.Logging.AddDebug();
 #endif
+
+            // builder.Services.AddSingleton<IToDoDataService, ToDoDataService>();
+            builder.Services.AddHttpClient<IToDoDataService, ToDoDataService>(); // HttpClient will be managed by HttpClientFactory
+            builder.Services.AddSingleton<MainPage>();
+            builder.Services.AddTransient<ManageToDoPage>();
 
             return builder.Build();
         }

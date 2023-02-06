@@ -1,41 +1,32 @@
 ﻿<?xml version="1.0" encoding="utf-8" ?>
 <ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
-             x:Class="ToDo.Maui.MainPage">
+             xmlns:models="clr-namespace:ToDo.Maui.Models"
+             x:Class="ToDo.Maui.MainPage"
+             Title="My To Dos">
 
-    <ScrollView>
-        <VerticalStackLayout
-            Spacing="25"
-            Padding="30,0"
-            VerticalOptions="Center">
+    <ContentPage.ToolbarItems>
+        <ToolbarItem Text="Add To Do" Clicked="OnAddToDoClicked" />
+    </ContentPage.ToolbarItems>
 
-            <Image
-                Source="dotnet_bot.png"
-                SemanticProperties.Description="Cute dot net bot waving hi to you!"
-                HeightRequest="200"
-                HorizontalOptions="Center" />
+    <CollectionView x:Name="CollectionView" 
+                    SelectionMode="Single"
+                    SelectionChanged="OnSelectionChanged"
+                    Margin="30">
 
-            <Label
-                Text="Hello, World!"
-                SemanticProperties.HeadingLevel="Level1"
-                FontSize="32"
-                HorizontalOptions="Center" />
+        <CollectionView.ItemsLayout>
+            <LinearItemsLayout Orientation="Vertical" ItemSpacing="10" />
+        </CollectionView.ItemsLayout>
 
-            <Label
-                Text="Welcome to .NET Multi-platform App UI"
-                SemanticProperties.HeadingLevel="Level2"
-                SemanticProperties.Description="Welcome to dot net Multi platform App U I"
-                FontSize="18"
-                HorizontalOptions="Center" />
+        <CollectionView.ItemTemplate>
+            <DataTemplate>
+                <Label x:DataType="models:ToDo"
+                       Text="{Binding ToDoName}" 
+                       FontSize="Medium" 
+                       Margin="10, 5"/>
+            </DataTemplate>
+        </CollectionView.ItemTemplate>
 
-            <Button
-                x:Name="CounterBtn"
-                Text="Click me"
-                SemanticProperties.Hint="Counts the number of times you click"
-                Clicked="OnCounterClicked"
-                HorizontalOptions="Center" />
-
-        </VerticalStackLayout>
-    </ScrollView>
+    </CollectionView>
 
 </ContentPage>
