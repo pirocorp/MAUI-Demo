@@ -162,14 +162,14 @@ In the original version, the click handler updates the button text directly.
 ```csharp
 private void OnCounterClicked(object sender, EventArgs e)
 {
-	count++;
+    count++;
 
-	if (count == 1)
-		CounterBtn.Text = $"Clicked {count} time";
-	else
-		CounterBtn.Text = $"Clicked {count} times";
+    if (count == 1)
+	CounterBtn.Text = $"Clicked {count} time";
+    else
+	CounterBtn.Text = $"Clicked {count} times";
 
-	SemanticScreenReader.Announce(CounterBtn.Text);
+    SemanticScreenReader.Announce(CounterBtn.Text);
 }
 ```
 
@@ -178,8 +178,8 @@ Now we are going to change this to use data binding instead. First, we will set 
 ```csharp
 public MainPage()
 {
-    InitializeComponent();
-    BindingContext = this; // Set the binding context to the current UI control.
+    this.InitializeComponent();
+    this.BindingContext = this; // Set the binding context to the current UI control.
 }
 ```
 
@@ -190,15 +190,14 @@ private int count;
 
 public int Count
 {
-    get
-    {
-        return this.count;
-    }
+    get => this.count;
     set
     {
-        this.count = value;
-        this.OnPropertyChanged();
-        this.OnPropertyChanged("ButtonText");
+	this.count = value;
+
+	// Telling the UI that the property has been updated.
+	this.OnPropertyChanged();
+	this.OnPropertyChanged(nameof(this.ButtonText));
     }
 }
 ```
@@ -206,27 +205,18 @@ public int Count
 We will create a separate property for the actual button text.
 
 ```csharp
-public string ButtonText
+public string ButtonText => this.Count switch
 {
-    get
-    {
-        if (Count == 0)
-            return "Click Here";
-        if (Count == 1)
-            return "Clicked 1 time";
-            
-        return $"Clicked {Count} times";
-    }
-}
+    0 => "Click Here",
+    1 => "Clicked 1 time",
+    _ => $"Clicked {this.Count} times"
+};
 ```
 
 Now we will update the click handler to update the Count property.
 
 ```csharp
-private void OnCounterClicked(object sender, EventArgs e)
-{
-    Count = Count + 1;		
-}
+private void OnCounterClicked(object sender, EventArgs e) => this.Count++;
 ```
 
 Last, we must update the button control. We must bind the button’s text to the newly created ButtonText property.
