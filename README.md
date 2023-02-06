@@ -139,13 +139,6 @@ The child of a ContentPage is typically a layout, such as Grid or StackLayout, w
 
 What is data binding? Data binding is when we take the value of a property in our C# class and make it the value that drives a property in our MAUI controls.
 
-Data bindings connect properties of two objects, called the **source** and the **target**. In code, two steps are required:
-
-1. The `BindingContext` property of the target object must be set to the source object,
-2. The `SetBinding` method (often used in conjunction with the Binding class) must be called on the target object to bind a property of that object to a property of the source object.
-
-The target property must be a bindable property, which means that the target object must derive from `BindableObject`. 
-
 If we look at the original XAML, the code for the button is pretty basic.
 
 ```xaml
