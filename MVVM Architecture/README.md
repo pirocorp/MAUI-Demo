@@ -33,7 +33,7 @@ We can use this mechanism as well to inject a ViewModel into our View. The only 
 ```csharp
 public MainPage(MainPageViewModel viewModel)
 {
-    this.viewModel = viewModel;
+    this.BindingContext = viewModel;
 
     this.InitializeComponent();
 }
@@ -99,9 +99,102 @@ public partial class App : Application
 }
 ```
 
+Let’s take a look at what the first implementation of `NavigationService` looks like:
 
+```csharp
+public class NavigationService : INavigationService
+{
+    private readonly IServiceProvider services;
+    
+    public NavigationService(IServiceProvider services)
+    {
+        this.services = services;
+    }
 
+    protected static INavigation Navigation => Application.Current?.MainPage?.Navigation
+        ?? throw new InvalidOperationException("Navigation property is null");
 
+    public Task NavigateToSecondPage()
+    {
+        var page = _services.GetService<SecondPage>();
 
+        if (page is not null)
+        {
+	    return Navigation.PushAsync(page, true);
+        }
+
+        throw new InvalidOperationException($"Unable to resolve type SecondPage");
+    }
+}
+```
+
+Let’ break this down!
+
+Firstly, the `Navigation` property provides access to the `Navigation` property of the `App`‘s `MainPage`. This is just for convenience inside the `NavigationService`.
+
+Secondly, you’ll notice that the `NavigationService` has a **constructor** with a parameter of type `IServiceProvider`. We can use this **ServiceProvider** to resolve the classes or instances we registered in the **MauiProgram** class. This **ServiceProvider** will get injected when we resolve an instance of the **NavigationService**, and we’ll set this **ServiceProvider** as a readonly field on our class.
+
+Finally, there is a `NavigateToSecondPage` method. This is the kind of method that should be called from a **ViewModel** that gets this **NavigationService** injected. By using the injected **IServiceProvider**, we’ll try to resolve the type of page we want to navigate to. Once we have resolved an instance, we use the **Navigation** property of type **INavigation** to navigate to the resolved instance. While we resolved the requested page, the DI container will have resolved all dependencies, like a **ViewModel** and its dependencies, as long as everything was registered in our container.
+
+We can even clean the **NavigateToSecondPage** up, as most of the code in there can be reused once we add methods to navigate to other pages:
+
+```csharp
+public Task NavigateToSecondPage() => NavigateToPage<SecondPage>();
+
+private Task NavigateToPage<T>() where T : Page
+{
+    var page = ResolvePage<T>();
+
+    if(page is not null)
+    {
+    	return Navigation.PushAsync(page, true);
+    }
+
+    throw new InvalidOperationException($"Unable to resolve type {typeof(T).FullName}");
+}
+
+private T? ResolvePage<T>() where T : Page
+    => this.services.GetService<T>();
+```
+
+Now that we have the NavigationService in place we can register it in our DI container, along with our new **Page** and its **ViewModel**:
+
+```csharp
+builder.Services.AddTransient<SecondPage>();
+builder.Services.AddTransient<SecondPageViewModel>();
+builder.Services.AddSingleton<INavigationService, NavigationService>();
+```
+
+Next, we can update the `MainPageViewModel` so that an instance of type `INavigationService` is injected and call its `NavigateToSecondPage` method in a command, for example:
+
+```csharp
+public class MainPageViewModel : ViewModelBase
+{
+    private readonly IDataService dataService;
+    private readonly INavigationService navigationService;
+
+    public MainPageViewModel(IDataService dataService, INavigationService navigationService)
+    {
+        this.dataService = dataService;
+        this.navigationService = navigationService;
+    }
+
+    public Command NavigateToSecondPageCommand 
+        => new(async () => await this.navigationService.NavigateToSecondPage("some id"));
+}
+```
+
+All that’s left to do, is bind this **NavigateCommand** to a Button in XAML:
+
+```csharp
+<Button 
+    Text="Click me"
+    FontAttributes="Bold"
+    Grid.Row="3"
+    Command="{Binding NavigateToSecondPageCommand}"
+    HorizontalOptions="Center" />
+```
+
+Tapping this button will call the `MainPageViewModel`‘s (our BindingContext) `NavigateToSecondPageCommand`, which will call the NavigationService‘s `NavigateToSecondPage` method which will perform the actual navigation by resolving an instance of type `SecondPage` and navigate to that via the App‘s `MainPage`’s `Navigation` property.
 
 
