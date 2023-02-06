@@ -195,6 +195,6 @@ All that’s left to do, is bind this **NavigateCommand** to a Button in XAML:
     HorizontalOptions="Center" />
 ```
 
-Tapping this button will call the `MainPageViewModel`‘s (our BindingContext) `NavigateToSecondPageCommand`, which will call the NavigationService‘s `NavigateToSecondPage` method which will perform the actual navigation by resolving an instance of type `SecondPage` and navigate to that via the App‘s `MainPage`’s `Navigation` property.
+Tapping this button will call the `MainPageViewModel`‘s (our `BindingContext`) `NavigateToSecondPageCommand`, which will call the `NavigationService`‘s `NavigateToSecondPage` method which will perform the actual navigation by resolving an instance of type `SecondPage` and navigate to that via the `App`‘s `MainPage`’s `Navigation` property.
 
 
