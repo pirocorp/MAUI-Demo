@@ -7,19 +7,19 @@ One of the awesome new things in MAUI is that we now have a DI container at our 
 If we want, for example, to add our `MainPage` class to the DI container, we can do this as follows:
 
 ```csharp
-	public static MauiApp CreateMauiApp()
+public static MauiApp CreateMauiApp()
+{
+    var builder = MauiApp.CreateBuilder();
+    builder
+	.UseMauiApp<App>()
+	.ConfigureFonts(fonts =>
 	{
-		var builder = MauiApp.CreateBuilder();
-		builder
-			.UseMauiApp<App>()
-			.ConfigureFonts(fonts =>
-			{
-				fonts.AddFont("OpenSans-Regular.ttf", "OpenSansRegular");
-				fonts.AddFont("OpenSans-Semibold.ttf", "OpenSansSemibold");
-			});
+		fonts.AddFont("OpenSans-Regular.ttf", "OpenSansRegular");
+		fonts.AddFont("OpenSans-Semibold.ttf", "OpenSansSemibold");
+	});
 
     builder.Services.AddTransient<MainPage>();
 
-		return builder.Build();
-	}
+    return builder.Build();
+}
 ```
