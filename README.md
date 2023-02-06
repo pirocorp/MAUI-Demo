@@ -223,6 +223,17 @@ Last, we must update the button control. We must bind the button’s text to the
       HorizontalOptions="Center" />
 ```
 
+## [MVVM Architecture](MVVM%20Architecture)
+
+Set up MVVM Architecture with the following features:
+
+- Have Dependency Injection (DI) working
+- Ability to bind ViewModels to Views
+- Simple navigation from the ViewModels (only ‘linear’ navigation, forward, back, no tabs or drawer navigation)
+- Ability to pass parameters when navigating
+- Trigger events or call functions when navigating
+
+
 ## Resources
 
 - [Connect to local web services from Android emulators and iOS simulators](https://learn.microsoft.com/en-us/dotnet/maui/data-cloud/local-web-services)
