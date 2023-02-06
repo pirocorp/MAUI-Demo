@@ -427,3 +427,12 @@ public App(INavigationService navigationService)
 
 Instead of injecting an instance of `MainPage`, we’re going to inject an instance of the `INavigationService`. We’ll assign the MainPage property to a `new NavigationPage`, followed by calling `NavigateToMainPage` on our `NavigationService`:
 
+```csharp
+public Task NavigateToMainPage()
+    => NavigateToPage<MainPage>();
+```
+
+## Conclusion
+
+Some sort of navigation in MAUI when building apps in a MVVM-ish architecture.
+
