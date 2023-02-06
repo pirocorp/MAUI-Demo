@@ -137,20 +137,108 @@ The child of a ContentPage is typically a layout, such as Grid or StackLayout, w
 
 ## Data bindings
 
-.NET Multi-platform App UI (.NET MAUI) data bindings allow properties of two objects to be linked so that a change in one causes a change in the other. This is a very valuable tool, and while data bindings can be defined entirely in code, XAML provides shortcuts and convenience.
+What is data binding? Data binding is when we take the value of a property in our C# class and make it the value that drives a property in our MAUI controls.
 
 Data bindings connect properties of two objects, called the **source** and the **target**. In code, two steps are required:
 
 1. The `BindingContext` property of the target object must be set to the source object,
 2. The `SetBinding` method (often used in conjunction with the Binding class) must be called on the target object to bind a property of that object to a property of the source object.
 
-The target property must be a bindable property, which means that the target object must derive from BindableObject. A property of Label, such as `Text`, is associated with the bindable property `TextProperty`.
+The target property must be a bindable property, which means that the target object must derive from `BindableObject`. 
 
-```csharp
-// Set the binding context to the current UI control.
-BindingContext = this;
+If we look at the original XAML, the code for the button is pretty basic.
+
+```xaml
+<Button
+    x:Name="CounterBtn"
+    Text="Click me"
+    SemanticProperties.Hint="Counts the number of times you click"
+    Clicked="OnCounterClicked"
+    HorizontalOptions="Center" />
 ```
 
+In the original version, the click handler updates the button text directly.
+
+```csharp
+private void OnCounterClicked(object sender, EventArgs e)
+{
+	count++;
+
+	if (count == 1)
+		CounterBtn.Text = $"Clicked {count} time";
+	else
+		CounterBtn.Text = $"Clicked {count} times";
+
+	SemanticScreenReader.Announce(CounterBtn.Text);
+}
+```
+
+Now we are going to change this to use data binding instead. First, we will set the binding context to the current UI control.
+
+```csharp
+public MainPage()
+{
+    InitializeComponent();
+    BindingContext = this; // Set the binding context to the current UI control.
+}
+```
+
+Create a new `Count` property to handle the value. We will call `NotifyPropertyChanged` when we update this property, telling the UI that the property has been updated.
+
+```csharp
+private int count;
+
+public int Count
+{
+    get
+    {
+        return this.count;
+    }
+    set
+    {
+        this.count = value;
+        this.OnPropertyChanged();
+        this.OnPropertyChanged("ButtonText");
+    }
+}
+```
+
+We will create a separate property for the actual button text.
+
+```csharp
+public string ButtonText
+{
+    get
+    {
+        if (Count == 0)
+            return "Click Here";
+        if (Count == 1)
+            return "Clicked 1 time";
+            
+        return $"Clicked {Count} times";
+    }
+}
+```
+
+Now we will update the click handler to update the Count property.
+
+```csharp
+private void OnCounterClicked(object sender, EventArgs e)
+{
+    Count = Count + 1;		
+}
+```
+
+Last, we must update the button control. We must bind the button’s text to the newly created ButtonText property.
+
+```xaml
+<Button
+      x:Name="CounterBtn"
+      Text="{Binding ButtonText}"
+      SemanticProperties.Hint="Counts the number of times you click"
+      Clicked="OnCounterClicked"
+      HorizontalOptions="Center" />
+```
 
 ## Resources
 
