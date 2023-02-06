@@ -1,24 +1,13 @@
 ﻿namespace MVVM_Architecture;
 
+using MVVM_Architecture.ViewModels;
+
 public partial class MainPage : ContentPage
 {
-	int count = 0;
+	public MainPage(MainPageViewModel viewModel)
+    {
+        this.BindingContext = viewModel;
 
-	public MainPage()
-	{
-		InitializeComponent();
-	}
-
-	private void OnCounterClicked(object sender, EventArgs e)
-	{
-		count++;
-
-		if (count == 1)
-			CounterBtn.Text = $"Clicked {count} time";
-		else
-			CounterBtn.Text = $"Clicked {count} times";
-
-		SemanticScreenReader.Announce(CounterBtn.Text);
-	}
+        this.InitializeComponent();
+    }
 }
-

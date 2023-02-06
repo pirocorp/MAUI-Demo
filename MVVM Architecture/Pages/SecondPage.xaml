@@ -1,23 +1,23 @@
-﻿<?xml version="1.0" encoding="utf-8" ?>
+<?xml version="1.0" encoding="utf-8" ?>
 <ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
              xmlns:viewModels="clr-namespace:MVVM_Architecture.ViewModels"
-             x:Class="MVVM_Architecture.MainPage"
-             x:DataType="viewModels:MainPageViewModel"
+             x:Class="MVVM_Architecture.Pages.SecondPage"
+             x:DataType="viewModels:SecondPageViewModel"
              BackgroundColor="{DynamicResource SecondaryColor}">
 
     <ScrollView>
         <Grid RowSpacing="25" RowDefinitions="Auto,Auto,Auto,Auto,*"
               Padding="{OnPlatform iOS='30,60,30,30', Default='30'}">
 
-            <Label
-                Text="Welcome to .NET MAUI"
+            <Label 
+                Text="Second Page!"
                 Grid.Row="0"
                 SemanticProperties.HeadingLevel="Level1"
                 FontSize="32"
                 HorizontalOptions="Center" />
 
-            <Label
+            <Label 
                 Text="MVVM DEMO"
                 Grid.Row="1"
                 SemanticProperties.HeadingLevel="Level1"
@@ -25,12 +25,21 @@
                 FontSize="18"
                 HorizontalOptions="Center" />
 
-            <Button 
-                Text="Navigate"
-                FontAttributes="Bold"
-                Grid.Row="3"
-                Command="{Binding NavigateToSecondPageCommand}"
-                HorizontalOptions="Center" />
+            <HorizontalStackLayout  Grid.Row="3" HorizontalOptions="Center"> 
+                <Button 
+                    Text="Go back!"
+                    FontAttributes="Bold"
+                    Margin="10"
+                    Command="{Binding GoBackCommand}"
+                    HorizontalOptions="Center" />
+
+                <Button 
+                    Text="Next"
+                    FontAttributes="Bold"
+                    Margin="10"
+                    Command="{Binding NextCommand}"
+                    HorizontalOptions="Center" />
+            </HorizontalStackLayout>
 
             <Image Grid.Row="4"
                    Source="dotnet_bot.png"
