@@ -253,5 +253,163 @@ SecondPage:
     HorizontalOptions="Center" />
 ```
 
+### Passing parameters and more
 
+Without being able to properly pass parameters from one page to an other, it’s not that very useful. On top of that, when navigating to or from a page, ideally some methods on your ViewModels should be called to do stuff like fetching or cleaning-up data.
 
+Let’s add a `ViewModelBase` class with three abstract methods methods: `OnNavigatingTo`, `OnNavigatedFrom` and `OnNavigatedTo`
+
+```csharp
+public abstract class ViewModelBase : INotifyPropertyChanged
+{
+    public event PropertyChangedEventHandler? PropertyChanged;
+
+    public abstract Task OnNavigatingTo(object? parameter);
+
+    public abstract Task OnNavigatedFrom(bool isForwardNavigation);
+
+    public abstract Task OnNavigatedTo();
+
+    public virtual void RaisePropertyChanged([CallerMemberName] string? property = null)
+        => this.PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(property));
+}
+```
+
+These methods stand for the following:
+
+- `OnNavigatingTo` is called when navigating ‘forward’ to a **View(Model)**. It accepts a parameter of type `object` which allows us to pass a parameter from one **ViewModel** to another.
+- `OnNavigatedFrom` is called when we navigate away from a **View(Model)**. The parameter `isForwardNavigation` indicates if we’re navigating forward from this view to another (true), or if we navigate back from this view to the previous one (false). The later is particularly interesting to clean-up stuff as the page is no longer in the `NavigationStack`.
+- `OnNavigatedTo` is called when we have navigated to a **View(Model)**. This method is called when we navigate to a new **View (forward navigation)** AND also when we navigate back to a **View (back navigation)**.
+
+In order to call these methods, we need to add some extra code to the `NavigationService` and make sure our **ViewModels** inherit `ViewModelBase`.
+
+First, let’s take a look at the updated NavigateToPage method:
+
+```csharp
+private async Task NavigateToPage<T>(object? parameter = null) where T : Page
+{
+    var toPage = this.ResolvePage<T>();
+
+    //Subscribe to the toPage's NavigatedTo event
+    toPage.NavigatedTo += PageNavigatedTo;
+
+    //Get VM of the toPage
+    var toViewModel = GetPageViewModelBase(toPage);
+
+    //Call navigatingTo on VM, passing in the parameter
+    if (toViewModel is not null)
+    {
+        await toViewModel.OnNavigatingTo(parameter);
+    }
+
+    //Navigate to requested page
+    await Navigation.PushAsync(toPage, true);
+
+    //Subscribe to the toPage's NavigatedFrom event
+    toPage.NavigatedFrom += PageNavigatedFrom;
+}
+```
+
+The first thing that’s added is the fact that this method now accepts an optional `parameter` which will serve as the `parameter` we can pass from one view to another.
+
+Next, once we’ve resolved the page we want to navigate to, we’re going to subscribe to its `NavigatedTo` method. We’ll see the implementation of that in just a second, but you can already guess what it’ll do.
+
+Another thing we added to this method, is the thing were we want to get the page’s **ViewModel**, of type `ViewModelBase`. Nothing fancy going on in this `GetPageViewModelBase` method:
+
+```csharp
+private static ViewModelBase? GetPageViewModelBase(BindableObject? page)
+    => page?.BindingContext as ViewModelBase;
+```
+
+But back to the `NavigateToPage` method, once we have the `ViewModelBase`, we’re going to call our newly created method `OnNavigatingTo`, passing in the parameter.
+
+After that, we’re going to navigate to our page and finally also subscribe to the Page’s `NavigatedFrom` event.
+
+Let’s see what the NavigatedTo eventhandler that I talked about earlier looks like:
+
+```csharp
+private static async void PageNavigatedTo(object? sender, NavigatedToEventArgs e)
+    => await CallNavigatedTo(sender as Page);
+    
+private static Task CallNavigatedTo(BindableObject? page)
+{
+    var fromViewModel = GetPageViewModelBase(page);
+
+    return fromViewModel is not null 
+        ? fromViewModel.OnNavigatedTo() 
+        : Task.CompletedTask;
+}
+```
+
+When it’s called, we are going to see if the page has a `ViewModelBase`. If that’s the case, we are going to call the **ViewModel’s** `OnNavigatedTo` method.
+
+The final thing we need to take a look at, is the `NavigatedFrom` eventhandler:
+
+```csharp
+private static async void PageNavigatedFrom(object? sender, NavigatedFromEventArgs e)
+{
+    //To determine forward navigation, we look at the 2nd to last item on the NavigationStack
+    //If that entry equals the sender, it means we navigated forward from the sender to another page
+    var isForwardNavigation = Navigation.NavigationStack.Count > 1 
+			  && Navigation.NavigationStack[^2] == sender;
+
+    if (sender is Page thisPage)
+    {
+        if (!isForwardNavigation)
+        {
+	    thisPage.NavigatedTo -= PageNavigatedTo;
+	    thisPage.NavigatedFrom -= PageNavigatedFrom;
+        }
+
+        await CallNavigatedFrom(thisPage, isForwardNavigation);
+    }
+}
+
+private static Task CallNavigatedFrom(BindableObject page, bool isForward)
+{
+    var fromViewModel = GetPageViewModelBase(page);
+
+    return fromViewModel is not null 
+        ? fromViewModel.OnNavigatedFrom(isForward) 
+        : Task.CompletedTask;
+}
+```
+
+The `NavigatedFrom` event is triggered by MAUI when we navigate away from a particular page. This can be in one of two ways: or you navigate forward from that page to another, or you navigate back from the page to the previous page. The fact that the navigation is forward or backward is very valuable information, so we want to pass this to **ViewModel** we’ve navigated from.
+
+By looking at the `NavigationStack` we can determine which way (forward or backward) we’ve navigated. If we’ve navigated forward from a particular page, that page should be the 2nd to last item in the NavigationStack (as the page we’ve navigated to will be the last page in the stack). If that’s not the case, we’ve navigated back.
+
+Important to notice here is the fact that when it’s a back navigation, we want to unsubscribe from the page’s events! That way the page and **ViewModel** can be **GC**’ed as there are no more references to the page anymore.
+
+So once we’ve determined if its forward or backward navigation, unsubscribed from events (if needed), we can look up de Page’s **ViewModelBase** and call its `OnNavigatedFrom` method.
+
+With all of this in place, we can now start passing parameters from one **ViewModel** to another. If, for example `SecondPageViewModel` needs to get an id to be properly initialized, we need to do the following:
+
+INavigationService:
+
+```csharp
+Task NavigateToSecondPage(string id);
+```
+
+NavigationService:
+
+```csharp
+public Task NavigateToSecondPage(string id) => this.NavigateToPage<SecondPage>(id);
+```
+
+MainPageViewModel:
+
+```csharp
+public Command NavigateToSecondPageCommand 
+    => new(async () => await this.navigationService.NavigateToSecondPage("some id"));
+```
+
+SecondPageViewModel:
+
+```csharp
+public override Task OnNavigatingTo(object? parameter)
+{
+    Debug.WriteLine($"On navigating to SecondPage with parameter {parameter}");
+    return Task.CompletedTask;
+}
+```
