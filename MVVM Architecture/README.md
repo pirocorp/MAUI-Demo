@@ -84,17 +84,15 @@ How can we implement the navigation itself? Well, navigation in MAUI is done thr
 INavigation navigation = App.Current.MainPage.Navigation;
 ```
 
-Of course, this is only accessible once the MainPage property is set, which is typically done in the constructor of the App class.
+Of course, this is only accessible once the `MainPage` property is set, which is typically done in the constructor of the `App` class.
 
 ```csharp
 public partial class App : Application
 {
-    public App(INavigationService navigationService)
+    public App(MainPage mainPage)
     {
         this.InitializeComponent();
-
-        this.MainPage = new NavigationPage();
-        navigationService.NavigateToMainPage();
+        this.MainPage = new NavigationPage(mainPage);
     }
 }
 ```
@@ -413,3 +411,19 @@ public override Task OnNavigatingTo(object? parameter)
     return Task.CompletedTask;
 }
 ```
+
+### One final thing
+
+With all this navigation stuff in place, there is one final thing we shouldn’t forget. Remember how we initially set-up the MainPage property in our App? We injected in instance of `MainPage` in the `App`‘s constructor. While this works well, by doing so, we are completely bypassing all the above logic for our first page. Let’s make sure these navigation methods are also called on our initial **ViewModel**. To do so, we only need to tweak the `App` class a little bit:
+
+```csharp
+public App(INavigationService navigationService)
+{
+    InitializeComponent();
+    MainPage = new NavigationPage();
+    navigationService.NavigateToMainPage();
+}
+```
+
+Instead of injecting an instance of `MainPage`, we’re going to inject an instance of the `INavigationService`. We’ll assign the MainPage property to a `new NavigationPage`, followed by calling `NavigateToMainPage` on our `NavigationService`:
+
