@@ -75,3 +75,33 @@ public class MainPageViewModel : ViewModelBase
 ```
 
 ## NavigationService
+
+A `NavigationService` should be responsible for…. navigation, of course. It should expose methods that can be called in order to navigate from one page to another, and passing parameters from one **ViewModel** to another. I would like a `NavigationService` to be injected in my **ViewModels**, so that I can perform a navigation from a command that was triggered when the user tapped a button, for example. Injecting such a `NavigationService` into our **ViewModels** is the easy part, thanks to MAUI’s baked-in DI container.
+
+How can we implement the navigation itself? Well, navigation in MAUI is done through the `INavigation` interface. Once we get a hold of an implementation of that interface, we can do stuff like `PushAsync`, `PopAync`, `PushModalAsync`, … Every Page in MAUI has a `Navigation` property which is of type `INavigation`. But in our architecture, the **ViewModel** doesn’t know the Page, it doesn’t have a reference to it. Luckily, we can access the App‘s MainPage and get its `Navigation` property:
+
+```csharp
+INavigation navigation = App.Current.MainPage.Navigation;
+```
+
+Of course, this is only accessible once the MainPage property is set, which is typically done in the constructor of the App class.
+
+```csharp
+public partial class App : Application
+{
+    public App(INavigationService navigationService)
+    {
+        this.InitializeComponent();
+
+        this.MainPage = new NavigationPage();
+        navigationService.NavigateToMainPage();
+    }
+}
+```
+
+
+
+
+
+
+
